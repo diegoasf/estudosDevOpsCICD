@@ -1,9 +1,12 @@
 name: Build para ECR
 
 on:
-  push:
-    branches:
-      - main  # O workflow será executado quando houver um push para a branch "main"
+  workflow_dispatch:  # Permite disparar o workflow manualmente pela interface do GitHub
+    inputs:
+      branch:
+        description: 'Branch a ser construída'  # Adiciona uma opção de input para escolher a branch
+        required: true
+        default: 'main'
 
 jobs:
   build:
@@ -12,6 +15,8 @@ jobs:
     env:
       # Defina a região AWS diretamente aqui
       AWS_REGION: 'us-east-2'  # Substitua pela sua região
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Chave de Acesso AWS
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Chave Secreta AWS
 
     steps:
       # Passo 1: Checkout do código
@@ -31,10 +36,9 @@ jobs:
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          region: ${{ env.AWS_REGION }}  # Usando a variável de ambiente
+          registry-type: "public"  # Definindo o tipo de registro (se for público, use "public", caso contrário, use "private")
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Usando o secret da AWS
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Usando o secret da AWS
+          AWS_REGION: ${{ env.AWS_REGION }}  # Passando a região como variável de ambiente
 
       # Passo 5: Construir e enviar a imagem Docker para o ECR
       - name: Build and push Docker image
