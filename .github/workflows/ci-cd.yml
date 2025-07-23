@@ -13,20 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: 'us-east-2'
+      AWS_REGION: 'us-east-2'  # Substitua pela sua região
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
+      # Passo 1: Checkout do código
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Passo 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
+      # Passo 3: Verificar a variável AWS_REGION
       - name: Verify AWS_REGION
         run: echo "AWS_REGION is set to $AWS_REGION"
 
+      # Passo 4: Configurar as credenciais da AWS
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -34,13 +38,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Passo 5: Logar no ECR (Elastic Container Registry)
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-        env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      # Passo 6: Construir e enviar a imagem Docker para o ECR
       - name: Build and push Docker image
         run: |
           REPOSITORY_URI=043309320203.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/meu-repositorio-docker
