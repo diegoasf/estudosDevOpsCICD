@@ -39,6 +39,8 @@ jobs:
           registry-type: "public"  # Definindo o tipo de registro (se for público, use "public", caso contrário, use "private")
         env:
           AWS_REGION: ${{ env.AWS_REGION }}  # Passando a região como variável de ambiente
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Chave de Acesso AWS
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Chave Secreta AWS
 
       # Passo 5: Construir e enviar a imagem Docker para o ECR
       - name: Build and push Docker image
