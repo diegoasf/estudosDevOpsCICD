@@ -18,13 +18,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      # Passo 3: Logar no ECR (Elastic Container Registry)
+      # Passo 3: Verificação da variável AWS_REGION
+      - name: Verify AWS_REGION
+        run: echo "AWS_REGION is set to ${{ secrets.AWS_REGION }}"
+
+      # Passo 4: Logar no ECR (Elastic Container Registry)
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
         with:
           region: ${{ secrets.AWS_REGION }}
 
-      # Passo 4: Construir e enviar a imagem Docker para o ECR
+      # Passo 5: Construir e enviar a imagem Docker para o ECR
       - name: Build and push Docker image
         run: |
           REPOSITORY_URI=043309320203.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/meu-repositorio-docker
