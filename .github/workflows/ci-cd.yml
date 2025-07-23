@@ -1,0 +1,33 @@
+name: Build and Deploy NGINX Docker Image to ECS
+
+on:
+  push:
+    branches:
+      - main  # O workflow será executado quando houver um push para a branch "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Passo 1: Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Passo 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Passo 3: Logar no ECR (Elastic Container Registry)
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: ${{ secrets.AWS_REGION }}
+
+      # Passo 4: Construir e enviar a imagem Docker para o ECR
+      - name: Build and push Docker image
+        run: |
+          REPOSITORY_URI=043309320203.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/meu-repositorio-docker
+          IMAGE_TAG=${GITHUB_SHA}
+          docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+          docker push $REPOSITORY_URI:$IMAGE_TAG
